@@ -11,18 +11,18 @@
 #include "vector.hpp"
 
 namespace my {
-//
-// int print(const my::Vector<char> charr) {
-//  return fwrite(charr.begin(), sizeof(char), charr.size(), stdout);
-//}
-//
-// int print(my::Span<char, dyn_ext> charr) {
-//  return fwrite(charr.begin(), sizeof(char), charr.size(), stdout);
-//}
 
-// int print(const char *ch, usize len) {
-//   return fwrite(ch, sizeof(char), len, stdout);
-// }
+ int print(const my::Vector<char> charr) {
+  return fwrite(charr.begin(), sizeof(char), charr.size(), stdout);
+}
+
+ int print(my::Span<char, -1ULL> charr) {
+  return fwrite(charr.begin(), sizeof(char), charr.size(), stdout);
+}
+
+ int print(const char *ch, usize len) {
+   return fwrite(ch, sizeof(char), len, stdout);
+ }
 
 template <typename... Args>
 constexpr auto logln(Args... args) -> void {
@@ -45,84 +45,83 @@ constexpr auto log(Args... args) -> void {
 
 }  // namespace my
 
-//
-//// My Array
-// template <typename T, usize N>
-// struct std::formatter<my::Array<T, N>> : std::formatter<std::string> {
-//   template <class Ctx>
-//   constexpr auto format(my::Array<T, N> arr, Ctx &ctx) const {
-//     std::string str{"["};
-//     for (const auto &value : arr)
-//       str.append(std::format("{}, ", value));
-//     str.pop_back();
-//     str.pop_back();
-//     str.append("]");
-//     return std::formatter<std::string>::format(str, ctx);
-//   }
-// };
-//
-// template <usize N>
-// struct std::formatter<my::Array<char, N>> : std::formatter<std::string> {
-//   template <class Ctx>
-//   constexpr auto format(my::Array<char, N> arr, Ctx &ctx) const {
-//     std::string str{"\""};
-//     for (const auto &x : arr)
-//       str.append(std::format("{}", x));
-//     str.append("\"");
-//     return std::formatter<std::string>::format(str, ctx);
-//   }
-// };
-//
-//// My Vector
-// template <typename T>
-// struct std::formatter<my::Vector<T>> : std::formatter<std::string> {
-//   template <class Ctx>
-//   constexpr auto format(my::Vector<T> arr, Ctx &ctx) const {
-//     std::string str{"["};
-//     for (const auto &value : arr)
-//       str.append(std::format("{}, ", value));
-//     str.pop_back();
-//     str.pop_back();
-//     str.append("]");
-//     return std::formatter<std::string>::format(str, ctx);
-//   }
-// };
-//
-// template <>
-// struct std::formatter<my::Vector<char>> : std::formatter<std::string> {
-//   template <class Ctx>
-//   constexpr auto format(my::Vector<char> arr, Ctx &ctx) const {
-//     std::string str{"\""};
-//     for (const auto &x : arr)
-//       str.append(std::format("{}", x));
-//     str.append("\"");
-//     return std::formatter<std::string>::format(str, ctx);
-//   }
-// };
-//
-//// My Span
-// template <typename T, usize N>
-// struct std::formatter<my::Span<T, N>> : std::formatter<std::string> {
-//   template <class Ctx>
-//   constexpr auto format(my::Span<T, N> arr, Ctx &ctx) const {
-//     std::string str{"["};
-//     for (const auto &value : arr)
-//       str.append(std::format("{}, ", value));
-//     str.pop_back();
-//     str.pop_back();
-//     str.append("]");
-//     return std::formatter<std::string>::format(str, ctx);
-//   }
-// };
-//
-// template <usize N>
-// struct std::formatter<my::Span<char, N>> : std::formatter<std::string> {
-//   template <class Ctx>
-//   constexpr auto format(my::Span<char, N> arr, Ctx &ctx) const {
-//     std::string str{"\""};
-//     for (const auto &x : arr)
-//       str.append(std::format("{}", x));
-//     str.append("\"");
-//     return std::formatter<std::string>::format(str, ctx);
-//   }
-// };
+// My Array
+ template <typename T, usize N>
+ struct std::formatter<my::Array<T, N>> : std::formatter<std::string> {
+   template <class Ctx>
+   constexpr auto format(my::Array<T, N> arr, Ctx &ctx) const {
+     std::string str{"["};
+     for (const auto &value : arr)
+       str.append(std::format("{}, ", value));
+     str.pop_back();
+     str.pop_back();
+     str.append("]");
+     return std::formatter<std::string>::format(str, ctx);
+   }
+ };
+
+ template <usize N>
+ struct std::formatter<my::Array<char, N>> : std::formatter<std::string> {
+   template <class Ctx>
+   constexpr auto format(my::Array<char, N> arr, Ctx &ctx) const {
+     std::string str{"\""};
+     for (const auto &x : arr)
+       str.append(std::format("{}", x));
+     str.append("\"");
+     return std::formatter<std::string>::format(str, ctx);
+   }
+ };
+
+// My Vector
+ template <typename T>
+ struct std::formatter<my::Vector<T>> : std::formatter<std::string> {
+   template <class Ctx>
+   constexpr auto format(my::Vector<T> arr, Ctx &ctx) const {
+     std::string str{"["};
+     for (const auto &value : arr)
+       str.append(std::format("{}, ", value));
+     str.pop_back();
+     str.pop_back();
+     str.append("]");
+     return std::formatter<std::string>::format(str, ctx);
+   }
+ };
+
+ template <>
+ struct std::formatter<my::Vector<char>> : std::formatter<std::string> {
+   template <class Ctx>
+   constexpr auto format(my::Vector<char> arr, Ctx &ctx) const {
+     std::string str{"\""};
+     for (const auto &x : arr)
+       str.append(std::format("{}", x));
+     str.append("\"");
+     return std::formatter<std::string>::format(str, ctx);
+   }
+ };
+
+// My Span
+ template <typename T, usize N>
+ struct std::formatter<my::Span<T, N>> : std::formatter<std::string> {
+   template <class Ctx>
+   constexpr auto format(my::Span<T, N> arr, Ctx &ctx) const {
+     std::string str{"["};
+     for (const auto &value : arr)
+       str.append(std::format("{}, ", value));
+     str.pop_back();
+     str.pop_back();
+     str.append("]");
+     return std::formatter<std::string>::format(str, ctx);
+   }
+ };
+
+ template <usize N>
+ struct std::formatter<my::Span<char, N>> : std::formatter<std::string> {
+   template <class Ctx>
+   constexpr auto format(my::Span<char, N> arr, Ctx &ctx) const {
+     std::string str{"\""};
+     for (const auto &x : arr)
+       str.append(std::format("{}", x));
+     str.append("\"");
+     return std::formatter<std::string>::format(str, ctx);
+   }
+ };

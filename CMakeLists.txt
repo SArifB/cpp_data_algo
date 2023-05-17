@@ -10,9 +10,9 @@ add_executable(CppDataAlgo src/main.cpp
         inc/cont.hpp
         inc/forward_list.hpp
         inc/iterator.hpp
-        inc/logger.hpp
         inc/span.hpp
         inc/vector.hpp
+        inc/rc_ptr.hpp
 )
 
 include(CPM.cmake)
