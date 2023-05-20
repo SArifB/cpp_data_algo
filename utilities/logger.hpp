@@ -5,10 +5,10 @@
 #include <iostream>
 #include <string>
 
-#include "array.hpp"
-#include "cont.hpp"
-#include "span.hpp"
-#include "vector.hpp"
+#include "../containers/array.hpp"
+#include "../containers/inc.hpp"
+#include "../containers/vector.hpp"
+#include "../containers/view.hpp"
 
 namespace my {
 

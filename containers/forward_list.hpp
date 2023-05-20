@@ -1,8 +1,7 @@
 #pragma once
-#include <utility>
 
-#include "box_ptr.hpp"
-#include "cont.hpp"
+#include "../pointers/box_ptr.hpp"
+#include "inc.hpp"
 
 namespace my {
 
@@ -22,16 +21,16 @@ struct ForwardList {
     ~ForwardList() noexcept { clean(); }
 
     auto append(T &&_data) {
-        auto tmp = Box{new Node{std::move(_data)}};
-        tmp->next = std::move(head);
-        head = std::move(tmp);
+        auto tmp = Box{new Node{move(_data)}};
+        tmp->next = move(head);
+        head = move(tmp);
     }
-    //    auto tmp = new_box<Node>(Node{std::move(_data)});
+    //    auto tmp = new_box<Node>(Node{move(_data)});
 
     auto pop() {
         if (not head) return;
-        auto tmp = std::move(head);
-        head = std::move(tmp->next);
+        auto tmp = move(head);
+        head = move(tmp->next);
     }
 
     auto size() const -> usize {

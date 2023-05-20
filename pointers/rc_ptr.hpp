@@ -1,16 +1,18 @@
 #pragma once
 #include <utility>
 
-#include "cont.hpp"
+#include "../containers/inc.hpp"
 
-namespace my {
-
+namespace {
 template<typename T>
 struct CtrlBlock {
-    usize srefs{};
-    usize wrefs{};
+    my::usize srefs{};
+    my::usize wrefs{};
     T val{};
 };
+} // namespace ~
+
+namespace my {
 
 template<typename T>
 struct WkRc;
@@ -69,7 +71,7 @@ public:
 
     ~Rc() {
         cb->srefs -= 1;
-        if (cb->srefs < 1) 
+        if (cb->srefs < 1)
             delete cb;
     }
 

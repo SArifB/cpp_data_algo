@@ -364,7 +364,7 @@ function(cpm_parse_add_package_single_arg arg outArgs)
       set(packageType "archive")
 
       # We could also check for SVN since FetchContent supports it, but SVN is so rare these days.
-      # We just won't bother with the additional complexity it will induce in this function. SVN is
+      # We just won't bother with the utilities complexity it will induce in this function. SVN is
       # done by multi-arg
     endif()
   else()

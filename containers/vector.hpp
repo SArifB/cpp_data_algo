@@ -3,8 +3,8 @@
 #include <initializer_list>
 #include <memory>
 
-#include "cont.hpp"
-#include "iterator.hpp"
+#include "../algorithms/iterator.hpp"
+#include "inc.hpp"
 
 namespace my {
 
@@ -194,6 +194,6 @@ Vector(I<T> first, I<T> last) -> Vector<I<T>>;
 
 }  // namespace my
 
-my::Vector<char> operator""_md(const char *ch, const usize len) {
+my::Vector<char> operator""_md(const char *ch, const my::usize len) {
     return my::Vector<char>{ch, len};
 }
