@@ -13,7 +13,7 @@ struct CtrlBlock {
 };
 
 template<typename T>
-struct wRc;
+struct WkRc;
 
 template<typename T>
 struct Rc {
@@ -29,7 +29,7 @@ public:
 
     Rc(const Rc &rhs) : cb{rhs.cb} { cb->srefs += 1; }
 
-    Rc(const wRc<T> &rhs) : cb{rhs.data()} { cb->srefs += 1; }
+    Rc(const WkRc<T> &rhs) : cb{rhs.data()} { cb->srefs += 1; }
 
     auto operator=(const Rc &rhs) -> Rc & {
         if (this != &rhs) {
@@ -39,7 +39,7 @@ public:
         return *this;
     }
 
-    auto operator=(const wRc<T> &rhs) -> Rc & {
+    auto operator=(const WkRc<T> &rhs) -> Rc & {
         if (this != &rhs) {
             cb = rhs.data();
             cb->srefs += 1;
@@ -49,7 +49,7 @@ public:
 
     Rc(Rc &&rhs) : cb{std::move(rhs.cb)} { cb->srefs += 1; }
 
-    Rc(wRc<T> &&rhs) : cb{std::move(rhs.data())} { cb->srefs += 1; }
+    Rc(WkRc<T> &&rhs) : cb{std::move(rhs.data())} { cb->srefs += 1; }
 
     auto operator=(Rc &&rhs) -> Rc & {
         if (this != &rhs) {
@@ -59,7 +59,7 @@ public:
         return *this;
     }
 
-    auto operator=(wRc<T> &&rhs) -> Rc & {
+    auto operator=(WkRc<T> &&rhs) -> Rc & {
         if (this != &rhs) {
             cb = std::move(rhs.data());
             cb->srefs += 1;
@@ -91,18 +91,18 @@ public:
 };
 
 template<typename T>
-struct wRc {
+struct WkRc {
 private:
     CtrlBlock<T> *cb;
 
 public:
-    wRc() = delete;
+    WkRc() = delete;
 
-    wRc(const wRc &rhs) : cb{rhs.cb} { cb->wrefs += 1; }
+    WkRc(const WkRc &rhs) : cb{rhs.cb} { cb->wrefs += 1; }
 
-    wRc(const Rc<T> &rhs) : cb{rhs.data()} { cb->wrefs += 1; }
+    WkRc(const Rc<T> &rhs) : cb{rhs.data()} { cb->wrefs += 1; }
 
-    auto operator=(const wRc &rhs) -> wRc & {
+    auto operator=(const WkRc &rhs) -> WkRc & {
         if (this != &rhs) {
             cb = rhs.cb;
             cb->wrefs += 1;
@@ -110,7 +110,7 @@ public:
         return *this;
     }
 
-    auto operator=(const Rc<T> &rhs) -> wRc & {
+    auto operator=(const Rc<T> &rhs) -> WkRc & {
         if (this != &rhs) {
             cb = rhs.data();
             cb->wrefs += 1;
@@ -118,11 +118,11 @@ public:
         return *this;
     }
 
-    wRc(wRc &&rhs) : cb{std::move(rhs.cb)} { cb->wrefs += 1; }
+    WkRc(WkRc &&rhs) : cb{std::move(rhs.cb)} { cb->wrefs += 1; }
 
-    wRc(Rc<T> &&rhs) : cb{std::move(rhs.data())} { cb->wrefs += 1; }
+    WkRc(Rc<T> &&rhs) : cb{std::move(rhs.data())} { cb->wrefs += 1; }
 
-    auto operator=(wRc &&rhs) -> wRc & {
+    auto operator=(WkRc &&rhs) -> WkRc & {
         if (this != &rhs) {
             cb = std::move(rhs.cb);
             cb->wrefs += 1;
@@ -130,7 +130,7 @@ public:
         return *this;
     }
 
-    auto operator=(Rc<T> &&rhs) -> wRc & {
+    auto operator=(Rc<T> &&rhs) -> WkRc & {
         if (this != &rhs) {
             cb = std::move(rhs.data());
             cb->wrefs += 1;
@@ -138,7 +138,7 @@ public:
         return *this;
     }
 
-    ~wRc() { cb->wrefs -= 1; }
+    ~WkRc() { cb->wrefs -= 1; }
 
     auto data() -> CtrlBlock<T> * { return cb; }
 
@@ -161,6 +161,6 @@ template<typename T>
 Rc(T *) -> Rc<T>;
 
 template<typename T>
-wRc(T *) -> wRc<T>;
+WkRc(T *) -> WkRc<T>;
 
 }  // namespace my

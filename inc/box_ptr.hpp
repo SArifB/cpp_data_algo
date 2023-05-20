@@ -47,9 +47,5 @@ public:
 template<typename T>
 Box(T *) -> Box<T>;
 
-template<typename T, typename... Args>
-auto new_box(Args &&...args) -> Box<T> {
-    return Box<T>(new T(std::forward<Args &&>(args)...));
-}
 
 }  // namespace my

@@ -11,7 +11,7 @@ struct Array : public Iterator<Array<T, N>> {
   private:
     T buf[N]{};
 
-  public:
+public:
     constexpr Array() = default;
 
     constexpr Array(const auto &...args) : buf{args...} {}
@@ -44,9 +44,7 @@ struct Array : public Iterator<Array<T, N>> {
 
     constexpr auto end() const -> const T * { return buf + N; }
 
-    constexpr auto operator[](const usize idx) const -> const T & {
-        return buf[idx];
-    }
+    constexpr auto operator[](const usize idx) const -> const T & { return buf[idx]; }
 };
 
 template<typename T, usize N>

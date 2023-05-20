@@ -64,7 +64,7 @@ private:
     // template<typename U>
     // constexpr Span(const Span<U, dyn_ext> &rhs) : rng{rhs.begin(), rhs.end()} {}
 
-    constexpr auto operator<=>(const Span &) const -> bool = default;
+    constexpr bool operator<=>(const Span &) const = default;
 
     constexpr ~Span() = default;
 
