@@ -1,6 +1,5 @@
 #pragma once
 #include <compare>
-#include <utility>
 
 #include "array.hpp"
 #include "inc.hpp"

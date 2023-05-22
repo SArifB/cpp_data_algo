@@ -1,14 +1,13 @@
 #pragma once
 #include <compare>
 
-#include "../algorithms/iterator.hpp"
-#include "inc.hpp"
+#include "../utilities/iterator.hpp"
 
 namespace my {
 
 template<typename T, usize N = 0>
 struct Array : public Iterator<Array<T, N>> {
-  private:
+private:
     T buf[N]{};
 
 public:
@@ -18,21 +17,21 @@ public:
 
     constexpr Array(auto &&...args) : buf{args...} {}
 
-    constexpr Array(const T*bn, const T*nd) : buf{} { copy(bn, nd, buf); }
+    constexpr Array(const T *bn, const T *nd) : buf{} { copy(bn, nd, buf); }
 
     constexpr Array(const Array &) = default;
 
     constexpr auto operator=(const Array &) -> Array & = default;
 
-    constexpr Array(Array &&) = default;
+    constexpr Array(Array &&)  noexcept = default;
 
-    constexpr auto operator=(Array &&) -> Array & = default;
+    constexpr auto operator=(Array &&)  noexcept -> Array & = default;
 
     constexpr auto operator<=>(const Array &) const -> bool = default;
 
     constexpr ~Array() = default;
 
-    constexpr auto size() const -> usize;
+    constexpr auto size() const -> usize  { return N; }
 
     constexpr auto front() -> T & { return buf[0]; }
 
@@ -49,11 +48,10 @@ public:
     constexpr auto begin() const -> const T * { return buf; }
 
     constexpr auto end() const -> const T * { return buf + N; }
-
 };
 
-template<typename T, usize N>
-constexpr auto Array<T, N>::size() const -> usize { return N; }
+//template<typename T, usize N>
+//constexpr auto Array<T, N>::size() const -> usize { return N; }
 
 //template<typename T, typename... U>
 //Array(T, U...) -> Array<T, 1 + sizeof...(U)>;

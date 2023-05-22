@@ -1,186 +1,146 @@
 #pragma once
 #include <compare>
 #include <initializer_list>
-#include <memory>
 
-#include "../algorithms/iterator.hpp"
-#include "inc.hpp"
+#include "../utilities/iterator.hpp"
 
 namespace my {
 
 template<typename T>
 struct Vector : public Iterator<Vector<T>> {
-  private:
-    template<typename U>
-    struct BaseDynRng {
-        U *itr{nullptr};
-        U *sen{nullptr};
-        U *cap{nullptr};
-    };
+private:
+    T *itr{nullptr};
+    T *sen{nullptr};
+    T *cap{nullptr};
 
-    BaseDynRng<T> rng{};
-
-  public:
+public:
     constexpr Vector() = default;
 
     constexpr Vector(const Vector &rhs) {
-        auto sz{rhs.size()};
-        rng.itr = new T[sz]{};
-        for (auto b{rhs.begin()}; b != rhs.end(); ++rng.itr, ++b) *rng.itr = *b;
-        rng.dyn_rng.sen = rng.itr + sz;
-        rng.dyn_rng.cap = rng.itr + sz;
+        auto sz = rhs.size();
+        itr = new T[sz];
+        copy(rhs.itr, rhs.sen, itr);
+        sen = itr + sz;
+        cap = rhs + sz;
     }
 
     constexpr auto operator=(const Vector &rhs) -> Vector & {
         if (this != &rhs) {
-            delete[] rng.itr;
-            auto sz{rhs.size()};
-            rng.itr = new T[sz]{};
-            for (auto b{rhs.begin()}; b != rhs.end(); ++rng.itr, ++b) *rng.itr = *b;
-            rng.sen = rng.itr + sz;
-            rng.cap = rng.itr + sz;
+            delete[] itr;
+            auto sz = rhs.size();
+            itr = new T[sz];
+            copy(rhs.itr, rhs.sen, itr);
+            sen = itr + sz;
+            cap = rhs + sz;
         }
         return *this;
     }
 
-    constexpr Vector(Vector &&rhs) noexcept {
-        auto sz{rhs.size()};
-        rng.itr = new T[sz]{};
-        for (auto b{rhs.begin()}; b != rhs.end(); ++rng.itr, ++b)
-            *rng.itr = std::exchange(*b, nullptr);
-        rng.sen = rng.itr + sz;
-        rng.cap = rng.itr + sz;
-    }
+    constexpr Vector(Vector &&rhs) noexcept : itr{exchange(rhs.itr, nullptr)}, sen{move(rhs.sen)}, cap{move(rhs.cap)} {}
 
-    constexpr auto operator=(Vector &&rhs) noexcept -> Vector & {
+    constexpr auto operator=(Vector &&rhs) -> Vector & {
         if (this != &rhs) {
-            delete[] rng.itr;
-            auto sz{rhs.size()};
-            rng.itr = new T[sz]{};
-            for (auto b{rhs.begin()}; b != rhs.end(); ++rng.itr, ++b)
-                *rng.itr = std::exchange(*b, nullptr);
-            rng.sen = rng.itr + sz;
-            rng.cap = rng.itr + sz;
+            delete[] itr;
+            itr = exchange(rhs.itr, nullptr);
+            sen = move(rhs.sen);
+            cap = move(rhs.cap);
         }
         return *this;
     }
 
-    constexpr Vector(const usize sz) : rng{new T[sz]{}} {
-        rng.sen = rng.itr + sz;
-        rng.cap = rng.itr + sz;
+    constexpr Vector(const usize sz) : itr{new T[sz]{}} {
+        sen = itr + sz;
+        cap = itr + sz;
     }
 
     constexpr Vector(const std::initializer_list<T> args) {
         auto sz{args.size()};
-        rng.itr = new T[sz]{};
-        std::copy(std::cbegin(args), std::cend(args), rng.itr);
-        //    for (auto ab{args.begin()}; rng.itr != (rng.itr + sz); ++rng.itr, ++ab)
-        //      *rng.itr = *ab;
-        rng.sen = rng.itr + sz;
-        rng.cap = rng.itr + sz;
+        itr = new T[sz]{};
+        copy(args.begin(), args.end(), itr);
+        sen = itr + sz;
+        cap = itr + sz;
     }
 
     template<typename I>
-    constexpr Vector(const I iter, const usize len) : rng{new char[len]{}} {
-        for (usize i{}; i < len; ++i) rng.itr[i] = iter[i];
-        rng.sen = rng.itr + len;
-        rng.cap = rng.itr + len;
+    constexpr Vector(const I *i, const usize len) : itr{new I[len]} {
+        copy(i, len, itr);
+        sen = itr + len;
+        cap = itr + len;
     }
 
-    /*
     template<typename I>
-    constexpr Vector(I i, usize sz) {
-      rng.itr = new T[sz]{};
-      for (; rng.itr != (rng.itr + sz); ++rng.itr, ++i)
-        *rng.itr = *i;
-      rng.sen = rng.itr + sz;
-      rng.cap = rng.itr + sz;
-    }
-  */
-
-    template<typename I>
-    constexpr Vector(I first, I last) {
+    constexpr Vector(const I *first, const I *last) {
         auto dist = first - last;
-        static_assert(dist >= 0, "Invalid range");
-        rng.itr = new T[dist]{};
-        for (; first != last; ++rng.itr, ++first) *rng.itr = *first;
-        rng.sen = last;
-        rng.cap = last;
+        itr = new I[dist];
+        copy(first, last, itr);
+        sen = itr + dist;
+        cap = itr + dist;
     }
 
     template<usize sz>
     constexpr Vector(T (&a)[sz]) {
-        rng.itr = new T[sz]{};
-        for (; rng.itr != (rng.itr + sz); ++rng.itr, ++a) *rng.itr = *a;
-        rng.sen = rng.itr + sz;
-        rng.cap = rng.itr + sz;
-    }
-
-    template<typename U>
-    constexpr Vector(const Vector<U> &rhs) {
-        auto sz{rhs.size()};
-        rng.itr = new U[sz]{};
-        for (auto b{rhs.begin()}; b != rhs.end(); ++rng.itr, ++b) *rng.itr = *b;
-        rng.sen = rng.itr + sz;
-        rng.cap = rng.itr + sz;
-    }
-
-    constexpr auto operator<=>(const Vector &) const -> bool = default;
-
-    constexpr ~Vector() noexcept { delete[] rng.itr; }
-
-    constexpr auto size() const -> usize { return rng.sen - rng.itr; }
-
-    constexpr auto capacity() const -> usize { return rng.cap - rng.itr; }
-
-    constexpr auto begin() -> T * { return rng.itr; }
-
-    constexpr auto end() -> T * { return rng.sen; }
-
-    constexpr auto operator[](const usize idx) -> T & {
-        static_assert(idx < size(), "Size mismatch");
-        return rng.itr[idx];
-    }
-
-    constexpr auto begin() const -> T * { return rng.itr; }
-
-    constexpr auto end() const -> T * { return rng.sen; }
-
-    constexpr auto operator[](const usize idx) const -> T & {
-        static_assert(idx < size(), "Size mismatch");
-        return rng.itr[idx];
+        itr = new T[sz]{};
+        copy(a, sz, itr);
+        sen = itr + sz;
+        cap = itr + sz;
     }
 
     constexpr auto push_back(const T &val) -> void {
-        if (rng.sen == rng.cap) {
-            usize osz = rng.cap - rng.itr;
+        if (sen == cap) {
+            usize osz = cap - itr;
             usize nsz = osz ? osz * 2 : 2;
             T *tmp{new T[nsz]{}};
-            if (rng.itr) {
-                //        std::copy(rng.itr, rng.sen, tmp);
-                for (; rng.itr != rng.sen; ++rng.itr, ++tmp) *tmp = *rng.itr;
-                delete[] rng.itr;
+            if (itr) {
+                copy(itr, sen, tmp);
+                delete[] itr;
             }
-            rng.itr = tmp;
-            rng.sen = rng.itr + osz;
-            rng.cap = rng.itr + nsz;
+            itr = tmp;
+            sen = itr + osz;
+            cap = itr + nsz;
         }
-        *rng.sen = val;
-        rng.sen = rng.sen + 1;
+        *sen = val;
+        sen += 1;
     }
 
     constexpr auto reserve(usize nsz) -> void {
         auto osz = size();
         T *tmp{new T[nsz]{}};
-        if (rng.itr) {
-            //      std::copy(rng.itr, rng.sen, tmp);
-            for (; rng.itr != (rng.itr + nsz); ++rng.itr, ++tmp) *tmp = *rng.itr;
-            delete[] rng.itr;
+        if (itr) {
+            copy(itr, sen, tmp);
+            delete[] itr;
         }
-        rng.itr = tmp;
-        rng.sen = tmp + osz;
-        rng.cap = tmp + nsz;
+        itr = tmp;
+        sen = tmp + osz;
+        cap = tmp + nsz;
     }
+
+    constexpr auto operator<=>(const Vector &) const -> bool = default;
+
+    constexpr ~Vector() noexcept { delete[] itr; }
+
+    constexpr auto front() -> T & { return itr; }
+
+    constexpr auto back() -> T & { return sen; }
+
+    constexpr auto front() const -> T & { return itr; }
+
+    constexpr auto back() const -> T & { return sen; }
+
+    constexpr auto size() const -> usize { return sen - itr; }
+
+    constexpr auto capacity() const -> usize { return cap - itr; }
+
+    constexpr auto begin() -> T * { return itr; }
+
+    constexpr auto end() -> T * { return sen; }
+
+    constexpr auto operator[](const usize idx) -> T & { return itr[idx]; }
+
+    constexpr auto begin() const -> T * { return itr; }
+
+    constexpr auto end() const -> T * { return sen; }
+
+    constexpr auto operator[](const usize idx) const -> T & { return itr[idx]; }
 };
 
 template<typename T>

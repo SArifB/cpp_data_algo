@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "inc.hpp"
+#include "view.hpp"
 #include <compare>
 
 namespace my {
@@ -23,16 +23,10 @@ struct SttVec {
     //    constexpr SttVec(const SttVec &rhs) : data{rhs.data}, len{rhs.len} {}
     //    constexpr SttVec(SttVec &&rhs) : data{move(rhs.data)}, len{move(rhs.len)} {}
 
-    constexpr SttVec(const Span<T, -1ULL> &ptr) : data{ptr.begin(), ptr.end()}, len{ptr.size()} {}
+    constexpr SttVec(const View<T, -1ULL> &ptr) : data{ptr.begin(), ptr.end()}, len{ptr.size()} {}
     constexpr SttVec(const T *ptr, usize size) : data{ptr, ptr + size}, len{size} {}
 
     constexpr bool operator<=>(const SttVec &) const = default;
-
-    //    constexpr bool operator==(const SttVec &rhs) const {
-    //        for (auto x{begin()}, y{rhs.begin()}; y != rhs.end(); ++x, ++y)
-    //            if (*x != *y) return false;
-    //        return true;
-    //    }
 
     constexpr auto operator[](usize idx) -> T & { return data[idx]; }
     constexpr auto operator[](usize idx) const -> const T & { return data[idx]; }

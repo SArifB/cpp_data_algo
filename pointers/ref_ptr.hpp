@@ -3,7 +3,7 @@
 //
 
 #pragma once
-#include "../containers/inc.hpp"
+
 namespace my {
 
 template<class T>
@@ -12,24 +12,22 @@ private:
     T *ptr;
 
 public:
-    constexpr Ref() = delete;
-    constexpr Ref(nullptr_t) = delete;
-    constexpr Ref(const T &&val) = delete;
-
-    constexpr Ref(const Ref &rhs) noexcept = default;
-
-    constexpr auto operator=(const Ref &rhs) noexcept -> Ref & = default;
-
-    constexpr Ref(Ref &&rhs) noexcept = default;
-
-    constexpr auto operator=(Ref &&rhs) noexcept -> Ref & = default;
+//    constexpr Ref() = delete;
+//    constexpr Ref(nullptr_t) = delete;
+//    constexpr Ref(const T &&val) = delete;
+//
+//    constexpr Ref(const Ref &rhs) noexcept = default;
+//
+//    constexpr auto operator=(const Ref &rhs) noexcept -> Ref & = default;
+//
+//    constexpr Ref(Ref &&rhs) noexcept = default;
+//
+//    constexpr auto operator=(Ref &&rhs) noexcept -> Ref & = default;
 
     constexpr Ref(T &&val) noexcept {
         T &ref = move(val);
         ptr = &ref;
     }
-
-    constexpr Ref(T *_ptr) noexcept : ptr{_ptr} {}
 
     constexpr ~Ref() noexcept = default;
 
@@ -47,12 +45,6 @@ public:
 };
 
 template<class T>
-Ref(T &&) -> Ref<T>;
-
-template<class T>
-Ref(T &) -> Ref<T>;
-
-template<class T>
-Ref(T *) -> Ref<T>;
+Ref(T) -> Ref<T>;
 
 }  // namespace my

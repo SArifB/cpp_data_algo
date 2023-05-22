@@ -1,13 +1,12 @@
 #pragma once
 
 #include "../pointers/box_ptr.hpp"
-#include "inc.hpp"
 
 namespace my {
 
 template<typename T>
 struct ForwardList {
-  private:
+private:
     struct Node {
         T data{};
         Box<Node> next{};
@@ -15,13 +14,13 @@ struct ForwardList {
 
     Box<Node> head{};
 
-  public:
+public:
     ForwardList() = default;
 
     ~ForwardList() noexcept { clean(); }
 
-    auto append(T &&_data) {
-        auto tmp = Box{new Node{move(_data)}};
+    auto append(T &&val) {
+        auto tmp = Box{new Node{move(val)}};
         tmp->next = move(head);
         head = move(tmp);
     }
@@ -35,8 +34,7 @@ struct ForwardList {
 
     auto size() const -> usize {
         usize size{};
-        for (auto tmp = head.get(); tmp; tmp = tmp->next.get(), ++size)
-            ;
+        for (auto tmp = head.get(); tmp; tmp = tmp->next.get(), ++size);
         return size;
     }
 

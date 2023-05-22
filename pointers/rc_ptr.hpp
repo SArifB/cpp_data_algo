@@ -1,7 +1,5 @@
 #pragma once
-#include <utility>
-
-#include "../containers/inc.hpp"
+#include "../utilities/utility.hpp"
 
 namespace {
 template<typename T>
@@ -10,7 +8,7 @@ struct CtrlBlock {
     my::usize wrefs{};
     T val{};
 };
-} // namespace ~
+}  // namespace
 
 namespace my {
 
@@ -25,7 +23,7 @@ private:
 public:
     Rc() : cb{new CtrlBlock<T>{1}} {}
 
-    Rc(T &&_val) : cb{new CtrlBlock<T>{1, 0, std::move(_val)}} {}
+    Rc(T &&_val) : cb{new CtrlBlock<T>{1, 0, move(_val)}} {}
 
     Rc(T *_val) : cb{new CtrlBlock<T>{1, 0, *_val}} {}
 
@@ -49,13 +47,13 @@ public:
         return *this;
     }
 
-    Rc(Rc &&rhs) : cb{std::move(rhs.cb)} { cb->srefs += 1; }
+    Rc(Rc &&rhs) : cb{exchange(rhs.cb, nullptr)} { cb->srefs += 1; }
 
-    Rc(WkRc<T> &&rhs) : cb{std::move(rhs.data())} { cb->srefs += 1; }
+    Rc(WkRc<T> &&rhs) : cb{exchange(rhs.data(), nullptr)} { cb->srefs += 1; }
 
     auto operator=(Rc &&rhs) -> Rc & {
         if (this != &rhs) {
-            cb = std::move(rhs.cb);
+            cb = exchange(rhs.cb, nullptr);
             cb->srefs += 1;
         }
         return *this;
@@ -63,7 +61,7 @@ public:
 
     auto operator=(WkRc<T> &&rhs) -> Rc & {
         if (this != &rhs) {
-            cb = std::move(rhs.data());
+            cb = exchange(rhs.cb, rhs.data());
             cb->srefs += 1;
         }
         return *this;
@@ -106,6 +104,7 @@ public:
 
     auto operator=(const WkRc &rhs) -> WkRc & {
         if (this != &rhs) {
+            delete cb;
             cb = rhs.cb;
             cb->wrefs += 1;
         }
@@ -114,19 +113,20 @@ public:
 
     auto operator=(const Rc<T> &rhs) -> WkRc & {
         if (this != &rhs) {
+            delete cb;
             cb = rhs.data();
             cb->wrefs += 1;
         }
         return *this;
     }
 
-    WkRc(WkRc &&rhs) : cb{std::move(rhs.cb)} { cb->wrefs += 1; }
+    WkRc(WkRc &&rhs) : cb{exchange(rhs.cb, nullptr)} { cb->wrefs += 1; }
 
-    WkRc(Rc<T> &&rhs) : cb{std::move(rhs.data())} { cb->wrefs += 1; }
+    WkRc(Rc<T> &&rhs) : cb{exchange(rhs.data(), nullptr)} { cb->wrefs += 1; }
 
     auto operator=(WkRc &&rhs) -> WkRc & {
         if (this != &rhs) {
-            cb = std::move(rhs.cb);
+            cb = exchange(rhs.cb, nullptr);
             cb->wrefs += 1;
         }
         return *this;
@@ -134,7 +134,7 @@ public:
 
     auto operator=(Rc<T> &&rhs) -> WkRc & {
         if (this != &rhs) {
-            cb = std::move(rhs.data());
+            cb = exchange(rhs.data(), nullptr);
             cb->wrefs += 1;
         }
         return *this;

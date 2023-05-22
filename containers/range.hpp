@@ -4,7 +4,6 @@
 
 #pragma once
 #include <compare>
-#include <utility>
 
 #include "array.hpp"
 #include "inc.hpp"
@@ -30,12 +29,12 @@ private:
 
         template<typename V, usize P>
         constexpr Span(Span<V, P> &&rhs) {
-            itr = move(rhs.itr);
+            itr = exchange(rhs.itr, nullptr);
         }
 
         template<typename I, usize P>
         constexpr Span(I (&a)[P]) {
-            itr = new RmPtr_tp<I>[P];
+            itr = new I[P];
             copy(a, S, itr);
         }
 
@@ -82,8 +81,8 @@ private:
         }
 
         template<typename I>
-        constexpr Span(I i, const usize sz) {
-            itr = new RmPtr_tp<I>[sz];
+        constexpr Span(const I *i, const usize sz) {
+            itr = new I[sz];
             copy(i, sz, itr);
             sen = itr + sz;
         }
@@ -137,7 +136,7 @@ public:
     }
 
     template<typename I>
-    constexpr Range(I i, const usize sz) : span{i, sz} {}
+    constexpr Range(const I *i, const usize sz) : span{i, sz} {}
 
     template<typename I>
     constexpr Range(I first, I last) : span{first, last} {}
