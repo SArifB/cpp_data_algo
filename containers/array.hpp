@@ -15,7 +15,7 @@ public:
 
     constexpr Array(const auto &...args) : buf{args...} {}
 
-    constexpr Array(auto &&...args) : buf{args...} {}
+    constexpr Array(auto &&...args) : buf{move(args)...} {}
 
     constexpr Array(const T *bn, const T *nd) : buf{} { copy(bn, nd, buf); }
 
@@ -37,7 +37,7 @@ public:
 
     constexpr auto back() -> T & { return buf[N - 1]; }
 
-    constexpr auto operator[](usize idx) -> T & { return buf[idx]; }
+    constexpr auto operator[](const usize idx) -> T & { return buf[idx]; }
 
     constexpr auto operator[](const usize idx) const -> const T & { return buf[idx]; }
 

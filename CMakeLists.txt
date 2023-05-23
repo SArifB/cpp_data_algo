@@ -19,7 +19,8 @@ add_executable(CppDataAlgo src/main.cpp
         containers/static_vector.hpp
         containers/suoc_map.hpp
         utilities/option.hpp
-        containers/range.hpp)
+        containers/range.hpp
+        containers2/vector_alt.hpp)
 
 include(CPM.cmake)
 CPMAddPackage("gh:fmtlib/fmt#10.0.0")

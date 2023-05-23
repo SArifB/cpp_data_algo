@@ -4,17 +4,15 @@ namespace my {
 
 template<typename D>
 struct Iterator {
-  private:
+private:
     inline constexpr auto self() -> D && { return static_cast<D &&>(*this); }
 
-    inline constexpr auto self() const -> const D && {
-        return static_cast<const D &&>(*this);
-    }
+    inline constexpr auto self() const -> D && { return static_cast<const D &&>(*this); }
 
-  protected:
+protected:
     constexpr ~Iterator() = default;
 
-  public:
+public:
     template<typename F>
     constexpr auto for_each(F &&f) -> void {
         for (auto i{self().begin()}, k{self().end()}; i != k; ++i) f(i);

@@ -17,9 +17,15 @@ struct Range : public Iterator<Range<T, N>> {
 private:
     template<typename U, usize S>
     struct Span {
-        U *itr[S]{nullptr};
+        U *itr{nullptr};
 
         constexpr Span() = default;
+
+        template<typename I, usize P>
+        constexpr Span(const I *i) {
+            itr = new I[P];
+            copy(i, P, itr);
+        }
 
         template<typename V, usize P>
         constexpr Span(const Span<V, P> &rhs) {
@@ -35,7 +41,7 @@ private:
         template<typename I, usize P>
         constexpr Span(I (&a)[P]) {
             itr = new I[P];
-            copy(a, S, itr);
+            copy(a, P, itr);
         }
 
         constexpr ~Span() noexcept { delete[] itr; }
@@ -88,9 +94,9 @@ private:
         }
 
         template<typename I>
-        constexpr Span(I first, I last) {
+        constexpr Span(const I *first, const I *last) {
             usize nsz = last - first;
-            itr = new RmPtr_tp<I>[nsz];
+            itr = new I[nsz];
             copy(first, last, itr);
             sen = itr + nsz;
         }

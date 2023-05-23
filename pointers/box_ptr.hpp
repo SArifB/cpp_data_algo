@@ -68,14 +68,25 @@ public:
 
     ~Box() noexcept { delete[] ptr; }
 
-    auto release() -> T * { return exchange(ptr, nullptr); }
+    auto release() -> T * { return my::exchange(ptr, nullptr); }
 
     auto reset(T *_ptr = nullptr) -> void {
-        T *tmp = exchange(ptr, _ptr);
+        T *tmp = my::exchange(ptr, _ptr);
         delete[] tmp;
     }
 
     operator bool() const { return static_cast<bool>(ptr); }
+
+    auto operator++() -> Box& {
+        ++ptr;
+        return *this;
+    }
+
+    auto operator++(int) -> Box& {
+        auto tmp = *this;
+        ++ptr;
+        return tmp;
+    }
 
     auto get() const -> T * { return ptr; }
 
